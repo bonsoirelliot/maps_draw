@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:map_draw/static/static_data.dart';
-import 'package:map_draw/widgets/circle_button.dart';
+import 'package:map_draw/widgets/buttons/circle_button.dart';
 
 /// Интерфейс для управления картой
 class MapButtons extends StatelessWidget {
