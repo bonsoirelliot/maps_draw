@@ -4,7 +4,18 @@ import 'package:map_draw/widgets/buttons/circle_button.dart';
 
 /// Интерфейс для управления картой
 class MapButtons extends StatelessWidget {
-  const MapButtons({Key? key}) : super(key: key);
+  final VoidCallback? onSettingsPressed;
+  final VoidCallback? onDeletePressed;
+  final VoidCallback? onPlusPressed;
+  final VoidCallback? onUserPositionPressed;
+
+  const MapButtons({
+    this.onDeletePressed,
+    this.onPlusPressed,
+    this.onSettingsPressed,
+    this.onUserPositionPressed,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,32 +24,28 @@ class MapButtons extends StatelessWidget {
       children: [
         CircleButton(
           icon: Icons.settings_rounded,
-          // TODO(Nikita): onPressed
-          onPressed: () {},
+          onPressed: onSettingsPressed,
         ),
         const SizedBox(
           height: StaticData.defaultPadding,
         ),
         CircleButton(
           icon: Icons.delete_rounded,
-          // TODO(Nikita): onPressed
-          onPressed: () {},
+          onPressed: onDeletePressed,
         ),
         const SizedBox(
           height: StaticData.defaultPadding,
         ),
         CircleButton(
           icon: Icons.add_rounded,
-          // TODO(Nikita): onPressed
-          onPressed: () {},
+          onPressed: onPlusPressed,
         ),
         const SizedBox(
           height: StaticData.defaultPadding,
         ),
         CircleButton(
           icon: Icons.navigation_outlined,
-          // TODO(Nikita): onPressed
-          onPressed: () {},
+          onPressed: onUserPositionPressed,
         ),
       ],
     );
