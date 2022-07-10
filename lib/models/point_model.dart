@@ -1,3 +1,5 @@
+import 'package:yandex_mapkit/yandex_mapkit.dart';
+
 class PointModel {
   final double latitude;
 
@@ -13,6 +15,13 @@ class PointModel {
       'latitude': latitude,
       'longitude': longitude,
     };
+  }
+
+  Point toPoint() {
+    return Point(
+      latitude: latitude,
+      longitude: longitude,
+    );
   }
 
   factory PointModel.fromJson(Map<dynamic, dynamic> json) {

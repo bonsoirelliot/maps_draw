@@ -21,7 +21,7 @@ class FigureModel {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
-      'lineColor': lineColor.toString(),
+      'lineColor': lineColor.toString().split('(0x')[1].split(')')[0],
       'points': points,
     };
   }

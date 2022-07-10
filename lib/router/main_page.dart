@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:map_draw/router/router.dart';
+import 'package:map_draw/static/static_data.dart';
 import 'package:map_draw/widgets/bottom_nav_bar/bottom_nav_bar.dart';
 
 class MainPage extends StatelessWidget {
@@ -9,12 +10,11 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AutoTabsScaffold(
-      // scaffoldKey: Keys.scaffoldKey,
+      scaffoldKey: Keys.scaffoldKey,
       routes: const [
         MapRouter(),
         SupportRouter(),
       ],
-
       bottomNavigationBuilder: (_, tabsRouter) {
         final hideBottomNav = tabsRouter.topMatch.meta['hideBottomNav'] == true;
 

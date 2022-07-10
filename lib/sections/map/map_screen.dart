@@ -21,33 +21,33 @@ class MapScreen extends ElementaryWidget<MapScreenWM> {
         alignment: Alignment.centerRight,
         children: [
           StateNotifierBuilder<List<MapObject>>(
-              listenableState: wm.streamedMapObjects,
-              builder: (context, mapObjects) {
-                return YandexMap(
-                  mapObjects: mapObjects ?? [],
-                  onMapCreated: (yandexMapController) {
-                    // onMapCreated?.call(yandexMapController);
-                    wm
-                      ..controller = yandexMapController
-                      ..onGetUserPositionError = (ex) {
-                        showError(
-                          context,
-                          ex.toString(),
-                        );
-                      }
-                      ..updateUserPosition();
-                    // ..onPlacemarkPressed = onPlacemarkPressed
-                    // ..init();
-                  },
-                );
-              }),
+            listenableState: wm.streamedMapObjects,
+            builder: (context, mapObjects) {
+              return YandexMap(
+                mapObjects: mapObjects ?? [],
+                onMapCreated: (yandexMapController) {
+                  wm
+                    ..controller = yandexMapController
+                    ..onGetUserPositionError = (ex) {
+                      showError(
+                        context,
+                        ex.toString(),
+                      );
+                    }
+                    ..moveToUserPosition();
+                },
+              );
+            },
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: StaticData.defaultPadding,
             ),
             child: MapButtons(
-              onUserPositionPressed: wm.updateUserPosition,
+              onUserPositionPressed: wm.moveToUserPosition,
               onDeletePressed: wm.onDeletePressed,
+              onSettingsPressed: wm.showSettingsBottomSheet,
+              onPlusPressed: wm.onPlusPressed,
             ),
           ),
         ],
