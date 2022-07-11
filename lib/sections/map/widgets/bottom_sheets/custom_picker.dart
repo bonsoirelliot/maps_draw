@@ -46,7 +46,6 @@ class CustomPicker extends StatelessWidget {
                 onTap: () {
                   onFigureSelected?.call(i);
                   Navigator.of(context).pop();
-                  Navigator.of(context).pop();
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(

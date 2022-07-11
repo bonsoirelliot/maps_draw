@@ -11,20 +11,12 @@ import 'package:map_draw/widgets/buttons/bordered_button_with_icon.dart';
 import 'package:map_draw/widgets/buttons/default_text_button.dart';
 import 'package:map_draw/widgets/inputs/custom_text_field.dart';
 
-class SettingsBottomSheet extends StatefulWidget {
+class SettingsBottomSheet extends StatelessWidget {
   final MapScreenWM wm;
   const SettingsBottomSheet({
     required this.wm,
     Key? key,
   }) : super(key: key);
-
-  @override
-  State<SettingsBottomSheet> createState() => _SettingsBottomSheetState();
-}
-
-class _SettingsBottomSheetState extends State<SettingsBottomSheet> {
-  // late final loadedFigures = widget.wm.streamedFigures.value;
-  // late final selectedFigure = widget.wm.selectedFigure.value!;
 
   @override
   Widget build(BuildContext context) {
@@ -33,17 +25,13 @@ class _SettingsBottomSheetState extends State<SettingsBottomSheet> {
         horizontal: StaticData.defaultPadding,
       ),
       child: StateNotifierBuilder<List<FigureModel>>(
-        listenableState: widget.wm.streamedFigures,
+        listenableState: wm.streamedFigures,
         builder: (context, figures) {
           return StateNotifierBuilder<int>(
-            listenableState: widget.wm.selectedFigure,
+            listenableState: wm.selectedFigure,
             builder: (context, selected) {
-              // TODO(Nikita): tupoe gavno
               final nameController =
                   TextEditingController(text: figures?[selected!].name);
-
-              // nameController.value =
-              //     nameController.value.copyWith(text: figures?[selected!].name);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -64,8 +52,8 @@ class _SettingsBottomSheetState extends State<SettingsBottomSheet> {
                         ),
                         builder: (context) => CustomPicker(
                           items: figures?.map((e) => e.name).toList(),
-                          onCreateNewFigurePressed: widget.wm.createNewFigure,
-                          onFigureSelected: widget.wm.selectFigure,
+                          onCreateNewFigurePressed: wm.createNewFigure,
+                          onFigureSelected: wm.selectFigure,
                         ),
                       );
                     },

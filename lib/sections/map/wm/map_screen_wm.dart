@@ -23,19 +23,6 @@ import 'package:map_draw/widgets/notifications/notification_methods.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
-  YandexMapController? controller;
-
-  ListenableState<int> get selectedFigure => model.selectedFigure;
-
-  ListenableState<List<FigureModel>> get streamedFigures =>
-      model.streamedFigures;
-
-  ListenableState<List<MapObject>> get streamedMapObjects =>
-      model.streamedMapObjects;
-
-  void Function(int object)? onPlacemarkPressed;
-  void Function(Exception exception)? onGetUserPositionError;
-
   final MapObjectId userMapId = const MapObjectId(
     'user',
   );
@@ -47,9 +34,22 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
   final clusterColor = Colors.blue;
   final clusterTextStyle = AppStyles.h6;
 
+  YandexMapController? controller;
+
+  void Function(int object)? onPlacemarkPressed;
+  void Function(Exception exception)? onGetUserPositionError;
+
   Random rng = Random();
 
   Point? userPosition;
+
+  ListenableState<int> get selectedFigure => model.selectedFigure;
+
+  ListenableState<List<FigureModel>> get streamedFigures =>
+      model.streamedFigures;
+
+  ListenableState<List<MapObject>> get streamedMapObjects =>
+      model.streamedMapObjects;
 
   MapScreenWM(super.model);
 
@@ -147,7 +147,20 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
     selectFigure(number - 1 > -1 ? number - 1 : number);
 
     Navigator.of(Keys.scaffoldKey.currentContext!).pop();
-    Navigator.of(Keys.scaffoldKey.currentContext!).pop();
+  }
+
+  //* Обновление позиции пользователя и навигация к ней
+  Future<void> moveToUserPosition() async {
+    await _updateUserPosition();
+
+    if (userPosition != null) {
+      unawaited(
+        CameraController.moveTo(
+          userPosition!,
+          controller,
+        ),
+      );
+    }
   }
 
   //* Обновление списка точек
@@ -177,20 +190,6 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
     );
   }
 
-  //* Обновление позиции пользователя и навигация к ней
-  Future<void> moveToUserPosition() async {
-    await _updateUserPosition();
-
-    if (userPosition != null) {
-      unawaited(
-        CameraController.moveTo(
-          userPosition!,
-          controller,
-        ),
-      );
-    }
-  }
-
   //* Обновление позиции пользователя
   Future<void> _updateUserPosition() async {
     final mapObj = [...model.streamedMapObjects.value ?? <MapObject>[]];
@@ -217,7 +216,9 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
               PlacemarkIconStyle(
                 image: BitmapDescriptor.fromBytes(
                   await PointDrawer.buildPointAppearance(
-                      radius: 20, pointColor: Colors.red),
+                    radius: 20,
+                    pointColor: Colors.red,
+                  ),
                 ),
               ),
             ),

@@ -3,8 +3,9 @@ import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 /// Сервис получения геопозиции пользователя
 class UserPositionGetter {
-  static Future<Point> getUserPosition(
-      {Function(Exception)? onGetUserPositionError}) async {
+  static Future<Point> getUserPosition({
+    Function(Exception)? onGetUserPositionError,
+  }) async {
     bool serviceEnabled;
     LocationPermission permission;
 

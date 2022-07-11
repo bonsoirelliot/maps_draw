@@ -40,7 +40,7 @@ class BorderedButtonWithIcon extends StatelessWidget {
             const Icon(
               CupertinoIcons.chevron_down,
               size: 20,
-            )
+            ),
           ],
         ),
       ),
