@@ -45,9 +45,9 @@ class MapScreen extends ElementaryWidget<MapScreenWM> {
             ),
             child: MapButtons(
               onUserPositionPressed: wm.moveToUserPosition,
-              onDeletePressed: wm.onDeletePressed,
+              // onDeletePressed: wm.onDeletePressed,
               onSettingsPressed: wm.showSettingsBottomSheet,
-              onPlusPressed: wm.onPlusPressed,
+              // onPlusPressed: wm.onPlusPressed,
             ),
           ),
         ],

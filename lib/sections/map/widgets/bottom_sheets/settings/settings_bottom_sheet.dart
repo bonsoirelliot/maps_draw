@@ -1,9 +1,10 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
+import 'package:map_draw/models/color_model.dart';
 import 'package:map_draw/models/figure_model.dart';
 import 'package:map_draw/sections/map/widgets/bottom_sheets/bottom_sheet_track.dart';
 import 'package:map_draw/sections/map/widgets/bottom_sheets/custom_picker.dart';
-import 'package:map_draw/sections/map/wm/map_screen_wm.dart';
+import 'package:map_draw/sections/map/widgets/bottom_sheets/settings/settins_wm.dart';
 import 'package:map_draw/static/static_data.dart';
 import 'package:map_draw/theme/styles.dart';
 import 'package:map_draw/theme/theme.dart';
@@ -11,15 +12,24 @@ import 'package:map_draw/widgets/buttons/bordered_button_with_icon.dart';
 import 'package:map_draw/widgets/buttons/default_text_button.dart';
 import 'package:map_draw/widgets/inputs/custom_text_field.dart';
 
-class SettingsBottomSheet extends StatelessWidget {
-  final MapScreenWM wm;
+class SettingsBottomSheet extends ElementaryWidget<SettingsWM> {
+  final List<FigureModel> figures;
+  final int selectedFigure;
+  final Function(List<FigureModel>)? onFiguresListUpdated;
+  final Function(int)? onFigureSelected;
   const SettingsBottomSheet({
-    required this.wm,
+    required this.figures,
+    required this.selectedFigure,
+    this.onFiguresListUpdated,
+    this.onFigureSelected,
     Key? key,
-  }) : super(key: key);
+  }) : super(
+          createSettingsWM,
+          key: key,
+        );
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(SettingsWM wm) {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: StaticData.defaultPadding,
@@ -30,8 +40,6 @@ class SettingsBottomSheet extends StatelessWidget {
           return StateNotifierBuilder<int>(
             listenableState: wm.selectedFigure,
             builder: (context, selected) {
-              final nameController =
-                  TextEditingController(text: figures?[selected!].name);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -71,7 +79,7 @@ class SettingsBottomSheet extends StatelessWidget {
                     height: 4,
                   ),
                   CustomTextField(
-                    controller: nameController,
+                    controller: wm.nameController,
                     hintText: 'Название фигуры',
                   ),
                   const SizedBox(
@@ -86,8 +94,34 @@ class SettingsBottomSheet extends StatelessWidget {
                   const SizedBox(
                     height: 4,
                   ),
-                  const BorderedButtonWithIcon(
-                    text: 'Цвет',
+                  StateNotifierBuilder<List<ColorModel>>(
+                    listenableState: wm.streamedColors,
+                    builder: (context, colors) {
+                      return BorderedButtonWithIcon(
+                        text: colors!
+                            .firstWhere((element) =>
+                                element.color.value ==
+                                figures?[selected!].lineColor.value)
+                            .name,
+                        onPressed: () {
+                          showModalBottomSheet<void>(
+                            context: context,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(12.0),
+                                topRight: Radius.circular(12.0),
+                              ),
+                            ),
+                            builder: (context) => CustomPicker(
+                              items: colors.map((e) => e.name).toList(),
+                              onFigureSelected: (color) {
+                                wm.updateFigure(color: color);
+                              },
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
                   const SizedBox(
                     height: 36,
@@ -97,7 +131,9 @@ class SettingsBottomSheet extends StatelessWidget {
                     children: [
                       DefaultTextButton(
                         text: 'СОХРАНИТЬ',
-                        onPressed: () {},
+                        onPressed: () {
+                          onFiguresListUpdated?.call(figures!);
+                        },
                       ),
                       DefaultTextButton(
                         text: 'Сбросить',
@@ -121,4 +157,12 @@ class SettingsBottomSheet extends StatelessWidget {
       ),
     );
   }
+
+  // void updateListener() {
+  //   final loadedFigures = widget.mapScreenWM.streamedFigures.value;
+  //   final selectedFigure = widget.mapScreenWM.selectedFigure.value!;
+
+  //   nameController.text =
+  //       loadedFigures?[selectedFigure].name ?? nameController.text;
+  // }
 }

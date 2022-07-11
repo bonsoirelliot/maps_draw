@@ -2,11 +2,8 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:map_draw/models/color_model.dart';
 import 'package:map_draw/models/figure_model.dart';
-import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-class MapScreenModel extends ElementaryModel {
-  final streamedMapObjects = StateNotifier<List<MapObject>>();
-
+class SettingsModel extends ElementaryModel {
   final streamedFigures = StateNotifier<List<FigureModel>>();
 
   final streamedColors = StateNotifier<List<ColorModel>>(
@@ -15,6 +12,7 @@ class MapScreenModel extends ElementaryModel {
       ColorModel(name: 'Красный', color: Colors.red),
       ColorModel(name: 'Желтый', color: Colors.yellow),
       ColorModel(name: 'Зеленый', color: Colors.green),
+      ColorModel(name: 'Белый', color: Colors.white),
     ],
   );
 

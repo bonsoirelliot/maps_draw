@@ -6,8 +6,8 @@ import 'dart:math';
 
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
+import 'package:map_draw/models/color_model.dart';
 import 'package:map_draw/models/figure_model.dart';
-import 'package:map_draw/models/point_model.dart';
 import 'package:map_draw/sections/map/map_screen.dart';
 import 'package:map_draw/sections/map/services/mapkit/camera_controller.dart';
 import 'package:map_draw/sections/map/services/mapkit/cluster_drawer.dart';
@@ -15,7 +15,7 @@ import 'package:map_draw/sections/map/services/mapkit/point_drawer.dart';
 import 'package:map_draw/sections/map/services/mapkit/user_position_service.dart';
 import 'package:map_draw/sections/map/services/storage/json_reader.dart';
 
-import 'package:map_draw/sections/map/widgets/bottom_sheets/settings_bottom_sheet.dart';
+import 'package:map_draw/sections/map/widgets/bottom_sheets/settings/settings_bottom_sheet.dart';
 import 'package:map_draw/sections/map/wm/map_screen_model.dart';
 import 'package:map_draw/static/static_data.dart';
 import 'package:map_draw/theme/styles.dart';
@@ -44,9 +44,12 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
   Point? userPosition;
 
   ListenableState<int> get selectedFigure => model.selectedFigure;
+  ListenableState<int> get selectedColor => model.selectedColor;
 
   ListenableState<List<FigureModel>> get streamedFigures =>
       model.streamedFigures;
+
+  ListenableState<List<ColorModel>> get streamedColors => model.streamedColors;
 
   ListenableState<List<MapObject>> get streamedMapObjects =>
       model.streamedMapObjects;
@@ -70,41 +73,18 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
         ),
       ),
       builder: (context) {
-        return SettingsBottomSheet(wm: this);
+        return SettingsBottomSheet(
+          figures: streamedFigures.value ?? <FigureModel>[],
+          selectedFigure: selectedFigure.value!,
+          onFiguresListUpdated: updateFiguresList,
+          onFigureSelected: selectFigure,
+        );
       },
     );
   }
 
-  Future<void> onDeletePressed() async {
-    // showError(context, 'Бабабой');
-    final models = [
-      FigureModel(
-        name: 'name',
-        lineColor: Colors.white,
-        points: [
-          PointModel(
-            latitude: 58.23332,
-            longitude: 58.23332,
-          ),
-        ],
-      ),
-    ];
-    await JsonReader.writeCounter(models);
-  }
-
-  Future<void> onPlusPressed() async {
-    try {
-      final a = await JsonReader.readFile();
-
-      if (a.isNotEmpty) {
-        // ignore: use_build_context_synchronously
-        showNotification(context, a.first.points.first.latitude.toString());
-      }
-    } on FileSystemException catch (e) {
-      await JsonReader.writeEmptyFile();
-    } on Exception catch (e) {
-      showError(context, '$e');
-    }
+  Future<void> writeFiguresToMemory(List<FigureModel> figures) async {
+    await JsonReader.writeCounter(figures);
   }
 
   Future<void> loadData() async {
@@ -120,7 +100,6 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
   }
 
   void selectFigure(int figure) {
-    debugPrint(figure.toString());
     if (model.streamedFigures.value != null &&
         model.streamedFigures.value!.isNotEmpty) {
       _updateClusterMapObject(model.streamedFigures.value![figure].points
@@ -131,22 +110,14 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
     }
   }
 
-  void createNewFigure() {
-    final figures = [...model.streamedFigures.value ?? <FigureModel>[]];
+  void updateFiguresList(List<FigureModel> figures) {
+    model.streamedFigures.accept(figures);
+    writeFiguresToMemory(figures);
+    debugPrint('statement');
+  }
 
-    final number = figures.length;
-
-    final newFigure = FigureModel(
-      name: 'Figure $number',
-      lineColor: Colors.white,
-      points: [],
-    );
-
-    model.streamedFigures.accept(figures..add(newFigure));
-
-    selectFigure(number - 1 > -1 ? number - 1 : number);
-
-    Navigator.of(Keys.scaffoldKey.currentContext!).pop();
+  void selectColor(int color) {
+    model.selectedColor.accept(color);
   }
 
   //* Обновление позиции пользователя и навигация к ней

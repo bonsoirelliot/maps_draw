@@ -24,21 +24,23 @@ class CustomPicker extends StatelessWidget {
           const SizedBox(
             height: 12,
           ),
-          InkWell(
-            onTap: onCreateNewFigurePressed,
-            child: Row(
-              children: const [
-                Icon(Icons.add),
-                Text(
-                  'Добавить новую фигуру',
-                  style: AppStyles.h5,
-                ),
-              ],
+          if (onCreateNewFigurePressed != null) ...[
+            InkWell(
+              onTap: onCreateNewFigurePressed,
+              child: Row(
+                children: const [
+                  Icon(Icons.add),
+                  Text(
+                    'Добавить новую фигуру',
+                    style: AppStyles.h5,
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 12,
-          ),
+            const SizedBox(
+              height: 12,
+            ),
+          ],
           if (items != null)
             ListView.builder(
               shrinkWrap: true,
