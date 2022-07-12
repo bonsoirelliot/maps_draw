@@ -26,12 +26,18 @@ class SettingsWM extends WidgetModel<SettingsBottomSheet, SettingsModel> {
     model.streamedFigures.accept(widget.figures);
     model.selectedFigure.accept(widget.selectedFigure);
 
-    nameController.value = nameController.value.copyWith(
-      text: model.streamedFigures.value?[model.selectedFigure.value!].name,
-    );
+    if (model.streamedFigures.value!.isNotEmpty) {
+      nameController.value = nameController.value.copyWith(
+        text: model.streamedFigures.value?[model.selectedFigure.value!].name,
+      );
+    }
   }
 
-  void updateFigure({int? color, String? name, List<PointModel>? points}) {
+  Future<void> updateFigure({
+    int? color,
+    String? name,
+    List<PointModel>? points,
+  }) async {
     final figures = [...model.streamedFigures.value ?? <FigureModel>[]];
     final finalFigures = <FigureModel>[];
 
@@ -55,6 +61,30 @@ class SettingsWM extends WidgetModel<SettingsBottomSheet, SettingsModel> {
 
     model.streamedFigures.accept(finalFigures);
   }
+
+  Future<void> updateFiguresAndSave() async {
+    await updateFigure(
+      name: nameController.text,
+    ).then<void>(
+      (value) => widget.onFiguresListUpdated?.call(
+        model.streamedFigures.value!,
+      ),
+    );
+
+    // ignore: use_build_context_synchronously
+    Navigator.of(context).pop();
+  }
+
+  void setDefaultValues() {
+    model.streamedFigures.accept(widget.figures);
+  }
+
+  // void saveCallback() {
+  //   updateFigure(
+  //     name: nameController.text,
+  //     color:
+  //   );
+  // }
 
   void selectFigure(int figure) {
     if (model.streamedFigures.value != null &&

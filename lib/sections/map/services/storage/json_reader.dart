@@ -28,7 +28,7 @@ class JsonReader {
     return file.writeAsStringSync(json.encode(models));
   }
 
-  static Future<void> writeCounter(List<FigureModel> models) async {
+  static Future<void> writeToMemory(List<FigureModel> models) async {
     final file = await _localFile;
 
     models.map((figure) => figure.toJson()).toList();

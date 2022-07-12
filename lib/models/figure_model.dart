@@ -18,14 +18,6 @@ class FigureModel {
     required this.points,
   });
 
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'name': name,
-      'lineColor': lineColor.toString().split('(0x')[1].split(')')[0],
-      'points': points,
-    };
-  }
-
   factory FigureModel.fromJson(Map<String, dynamic> json) => FigureModel(
         name: json['name'] as String,
         lineColor: Color(int.parse(json['lineColor'] as String, radix: 16)),
@@ -33,4 +25,12 @@ class FigureModel {
             .map((dynamic e) => PointModel.fromJson(e as Map<String, dynamic>))
             .toList(),
       );
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'lineColor': lineColor.toString().split('(0x')[1].split(')')[0],
+      'points': points,
+    };
+  }
 }

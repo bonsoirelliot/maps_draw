@@ -98,11 +98,13 @@ class SettingsBottomSheet extends ElementaryWidget<SettingsWM> {
                     listenableState: wm.streamedColors,
                     builder: (context, colors) {
                       return BorderedButtonWithIcon(
-                        text: colors!
-                            .firstWhere((element) =>
-                                element.color.value ==
-                                figures?[selected!].lineColor.value)
-                            .name,
+                        text: figures != null && figures.isNotEmpty
+                            ? colors!
+                                .firstWhere((element) =>
+                                    element.color.value ==
+                                    figures[selected!].lineColor.value)
+                                .name
+                            : 'Цвет',
                         onPressed: () {
                           showModalBottomSheet<void>(
                             context: context,
@@ -113,7 +115,7 @@ class SettingsBottomSheet extends ElementaryWidget<SettingsWM> {
                               ),
                             ),
                             builder: (context) => CustomPicker(
-                              items: colors.map((e) => e.name).toList(),
+                              items: colors!.map((e) => e.name).toList(),
                               onFigureSelected: (color) {
                                 wm.updateFigure(color: color);
                               },
@@ -131,15 +133,13 @@ class SettingsBottomSheet extends ElementaryWidget<SettingsWM> {
                     children: [
                       DefaultTextButton(
                         text: 'СОХРАНИТЬ',
-                        onPressed: () {
-                          onFiguresListUpdated?.call(figures!);
-                        },
+                        onPressed: wm.updateFiguresAndSave,
                       ),
                       DefaultTextButton(
                         text: 'Сбросить',
                         textColor: Colors.black,
                         backgroundColor: AppTheme.lightGray,
-                        onPressed: () {},
+                        onPressed: wm.setDefaultValues,
                       ),
                     ],
                   ),

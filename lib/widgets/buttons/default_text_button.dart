@@ -20,7 +20,7 @@ class DefaultTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () {},
+      onPressed: onPressed,
       style: TextButton.styleFrom(
         minimumSize: Size.zero,
         backgroundColor: onPressed != null ? backgroundColor : disabledColor,

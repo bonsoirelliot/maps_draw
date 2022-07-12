@@ -8,6 +8,7 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:map_draw/models/color_model.dart';
 import 'package:map_draw/models/figure_model.dart';
+import 'package:map_draw/models/point_model.dart';
 import 'package:map_draw/sections/map/map_screen.dart';
 import 'package:map_draw/sections/map/services/mapkit/camera_controller.dart';
 import 'package:map_draw/sections/map/services/mapkit/cluster_drawer.dart';
@@ -84,7 +85,8 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
   }
 
   Future<void> writeFiguresToMemory(List<FigureModel> figures) async {
-    await JsonReader.writeCounter(figures);
+    debugPrint('name ${figures.first.name}');
+    await JsonReader.writeToMemory(figures);
   }
 
   Future<void> loadData() async {
@@ -113,11 +115,79 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
   void updateFiguresList(List<FigureModel> figures) {
     model.streamedFigures.accept(figures);
     writeFiguresToMemory(figures);
-    debugPrint('statement');
   }
 
   void selectColor(int color) {
     model.selectedColor.accept(color);
+  }
+
+  void createPoint() {
+    final selected = model.selectedFigure.value!;
+
+    final figures = [...model.streamedFigures.value ?? <FigureModel>[]];
+    final finalFigures = <FigureModel>[];
+    final points = [...figures[selected].points];
+
+    if (userPosition != null) {
+      points.add(
+        PointModel(
+          latitude: userPosition!.latitude,
+          longitude: userPosition!.longitude,
+        ),
+      );
+
+      for (var i = 0; i < figures.length; i++) {
+        if (i == selected) {
+          finalFigures.add(
+            FigureModel(
+              name: figures[i].name,
+              lineColor: figures[i].lineColor,
+              points: points,
+            ),
+          );
+        } else {
+          finalFigures.add(figures[i]);
+        }
+      }
+
+      updateFiguresList(finalFigures);
+
+      _updateClusterMapObject(points.map((e) => e.toPoint()).toList());
+    }
+  }
+
+  void deletePoint() {
+    final selected = model.selectedFigure.value!;
+
+    final figures = [...model.streamedFigures.value ?? <FigureModel>[]];
+    final finalFigures = <FigureModel>[];
+    final points = [...figures[selected].points];
+
+    if (points.isNotEmpty) {
+      points.removeAt(points.length - 1);
+
+      debugPrint(points.toString());
+
+      for (var i = 0; i < figures.length; i++) {
+        if (i == selected) {
+          finalFigures.add(
+            FigureModel(
+              name: figures[i].name,
+              lineColor: figures[i].lineColor,
+              points: points,
+            ),
+          );
+        } else {
+          finalFigures.add(figures[i]);
+        }
+      }
+
+      updateFiguresList(finalFigures);
+
+      _updateClusterMapObject(points.map((e) => e.toPoint()).toList());
+    } else {
+      showError(context, 'Нет точек для удаления');
+    }
   }
 
   //* Обновление позиции пользователя и навигация к ней
