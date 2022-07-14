@@ -61,7 +61,7 @@ class SettingsBottomSheet extends ElementaryWidget<SettingsWM> {
                         builder: (context) => CustomPicker(
                           items: figures?.map((e) => e.name).toList(),
                           onCreateNewFigurePressed: wm.createNewFigure,
-                          onFigureSelected: wm.selectFigure,
+                          onItemSelected: wm.selectFigure,
                         ),
                       );
                     },
@@ -116,7 +116,7 @@ class SettingsBottomSheet extends ElementaryWidget<SettingsWM> {
                             ),
                             builder: (context) => CustomPicker(
                               items: colors!.map((e) => e.name).toList(),
-                              onFigureSelected: (color) {
+                              onItemSelected: (color) {
                                 wm.updateFigure(color: color);
                               },
                             ),

@@ -5,11 +5,11 @@ import 'package:map_draw/theme/styles.dart';
 class CustomPicker extends StatelessWidget {
   final List<String>? items;
   final VoidCallback? onCreateNewFigurePressed;
-  final Function(int)? onFigureSelected;
+  final Function(int)? onItemSelected;
   const CustomPicker({
     required this.items,
     this.onCreateNewFigurePressed,
-    this.onFigureSelected,
+    this.onItemSelected,
     Key? key,
   }) : super(key: key);
 
@@ -46,7 +46,7 @@ class CustomPicker extends StatelessWidget {
               shrinkWrap: true,
               itemBuilder: (context, i) => InkWell(
                 onTap: () {
-                  onFigureSelected?.call(i);
+                  onItemSelected?.call(i);
                   Navigator.of(context).pop();
                 },
                 child: Padding(
