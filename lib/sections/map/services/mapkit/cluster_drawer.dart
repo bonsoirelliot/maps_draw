@@ -3,12 +3,13 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:map_draw/sections/map/services/mapkit/point_drawer.dart';
 import 'package:surf_lint_rules/surf_lint_rules.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 /// Сервис отрисовки кластера
 class ClusterDrawer {
-  static Random _rng = Random();
+  static final Random _rng = Random();
 
   static Future<Uint8List> buildClusterAppearance(
     Cluster cluster, {
@@ -58,7 +59,12 @@ class ClusterDrawer {
     required TextStyle clusterTextStyle,
     Function(ClusterizedPlacemarkCollection, Cluster)? onClusterTap,
     Function(PlacemarkMapObject, Point)? onPlacemarkTap,
+    Color? color,
   }) async {
+    final pointAppearance = await PointDrawer.buildPointAppearance(
+      radius: 20,
+      pointColor: color ?? Colors.blue,
+    );
     return ClusterizedPlacemarkCollection(
       mapId: clusterMapId,
       radius: 15,
@@ -96,6 +102,13 @@ class ClusterDrawer {
             opacity: 1,
             mapId: MapObjectId(placemarkId),
             point: points[i],
+            icon: PlacemarkIcon.single(
+              PlacemarkIconStyle(
+                image: BitmapDescriptor.fromBytes(
+                  pointAppearance,
+                ),
+              ),
+            ),
           );
         },
       ),

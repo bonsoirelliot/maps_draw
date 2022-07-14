@@ -17,6 +17,8 @@ dependencies:
   
   flutter:
     sdk: flutter
+
+  flutter_native_splash: ^2.2.4
   
   geolocator: ^9.0.0
 
@@ -38,6 +40,9 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
+
+  assets:
+    - assets/
 
   fonts:
     - family: Nunito

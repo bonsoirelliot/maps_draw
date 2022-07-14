@@ -1,4 +1,4 @@
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, avoid_catches_without_on_clauses
 
 import 'dart:async';
 import 'dart:io';
@@ -32,6 +32,10 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
     'cluster',
   );
 
+  final MapObjectId lineMapId = const MapObjectId(
+    'line',
+  );
+
   final clusterColor = Colors.blue;
   final clusterTextStyle = AppStyles.h6;
 
@@ -63,6 +67,27 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
 
     loadData();
   }
+
+  // void testVoid() {
+  //   final testPoints = [
+  //     PointModel(latitude: 55.1916808, longitude: 61.3178509),
+  //     PointModel(latitude: 55.1996873, longitude: 61.3178522),
+  //     PointModel(latitude: 55.1936825, longitude: 61.3178500),
+  //   ];
+
+  //   _updateClusterMapObject(testPoints.map((e) => e.toPoint()).toList());
+
+  //   final fig = [...model.streamedFigures.value ?? <FigureModel>[]];
+  //   fig.add(
+  //     FigureModel(
+  //       name: 'xui',
+  //       lineColor: Colors.yellow,
+  //       points: testPoints,
+  //     ),
+  //   );
+
+  //   writeFiguresToMemory(fig);
+  // }
 
   void showSettingsBottomSheet() {
     showModalBottomSheet<void>(
@@ -115,6 +140,11 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
   void updateFiguresList(List<FigureModel> figures) {
     model.streamedFigures.accept(figures);
     writeFiguresToMemory(figures);
+
+    final selected = model.selectedFigure.value!;
+
+    final points = [...figures[selected].points];
+    _updateClusterMapObject(points.map((e) => e.toPoint()).toList());
   }
 
   void selectColor(int color) {
@@ -123,36 +153,39 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
 
   void createPoint() {
     final selected = model.selectedFigure.value!;
-
     final figures = [...model.streamedFigures.value ?? <FigureModel>[]];
-    final finalFigures = <FigureModel>[];
-    final points = [...figures[selected].points];
+    if (figures.isEmpty || figures.length - 1 < selected) {
+      showError(context, 'Не выбрана фигура или неверный индекс');
+    } else {
+      final finalFigures = <FigureModel>[];
+      final points = [...figures[selected].points];
 
-    if (userPosition != null) {
-      points.add(
-        PointModel(
-          latitude: userPosition!.latitude,
-          longitude: userPosition!.longitude,
-        ),
-      );
+      if (userPosition != null) {
+        points.add(
+          PointModel(
+            latitude: userPosition!.latitude,
+            longitude: userPosition!.longitude,
+          ),
+        );
 
-      for (var i = 0; i < figures.length; i++) {
-        if (i == selected) {
-          finalFigures.add(
-            FigureModel(
-              name: figures[i].name,
-              lineColor: figures[i].lineColor,
-              points: points,
-            ),
-          );
-        } else {
-          finalFigures.add(figures[i]);
+        for (var i = 0; i < figures.length; i++) {
+          if (i == selected) {
+            finalFigures.add(
+              FigureModel(
+                name: figures[i].name,
+                lineColor: figures[i].lineColor,
+                points: points,
+              ),
+            );
+          } else {
+            finalFigures.add(figures[i]);
+          }
         }
+
+        updateFiguresList(finalFigures);
+
+        _updateClusterMapObject(points.map((e) => e.toPoint()).toList());
       }
-
-      updateFiguresList(finalFigures);
-
-      _updateClusterMapObject(points.map((e) => e.toPoint()).toList());
     }
   }
 
@@ -161,6 +194,11 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
 
     final figures = [...model.streamedFigures.value ?? <FigureModel>[]];
     final finalFigures = <FigureModel>[];
+
+    if (figures.isEmpty || figures.length - 1 < selected) {
+      return showError(context, 'Не выбрана фигура или неверный индекс');
+    }
+
     final points = [...figures[selected].points];
 
     if (points.isNotEmpty) {
@@ -213,7 +251,22 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
       streamedMapObjects.value
         ?..removeWhere(
           (obj) => obj.mapId == clusterMapId,
+        )
+        ..removeWhere(
+          (obj) => obj.mapId == lineMapId,
         ),
+    );
+    final line = PolylineMapObject(
+      mapId: lineMapId,
+      strokeColor:
+          model.streamedFigures.value?[model.selectedFigure.value!].lineColor ??
+              Colors.blue,
+      outlineColor:
+          model.streamedFigures.value?[model.selectedFigure.value!].lineColor ??
+              Colors.blue,
+      polyline: Polyline(
+        points: points,
+      ),
     );
 
     final placemarkCollection = await ClusterDrawer.getPlacemarkCollection(
@@ -221,12 +274,15 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
       clusterMapId: clusterMapId,
       clusterColor: clusterColor,
       clusterTextStyle: clusterTextStyle,
+      color:
+          model.streamedFigures.value?[model.selectedFigure.value!].lineColor,
     );
 
     model.streamedMapObjects.accept(
       [
         ...model.streamedMapObjects.value ?? <MapObject>[],
         placemarkCollection,
+        line,
       ],
     );
   }
@@ -241,9 +297,14 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
         ),
     );
 
-    userPosition = await UserPositionGetter.getUserPosition(
-      onGetUserPositionError: onGetUserPositionError,
-    );
+    try {
+      userPosition = await UserPositionGetter.getUserPosition(
+        onGetUserPositionError: onGetUserPositionError,
+      );
+    } catch (e) {
+      e as Exception;
+      onGetUserPositionError?.call(e);
+    }
 
     if (userPosition != null) {
       model.streamedMapObjects.accept(
