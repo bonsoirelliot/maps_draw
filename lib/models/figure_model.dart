@@ -18,6 +18,7 @@ class FigureModel {
     required this.points,
   });
 
+  /// Фабричный конструктор для json парсера
   factory FigureModel.fromJson(Map<String, dynamic> json) => FigureModel(
         name: json['name'] as String,
         lineColor: Color(int.parse(json['lineColor'] as String, radix: 16)),
@@ -26,6 +27,7 @@ class FigureModel {
             .toList(),
       );
 
+  /// Конструктор для записи в json
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,

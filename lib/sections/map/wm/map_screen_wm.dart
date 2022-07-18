@@ -61,6 +61,7 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
 
   MapScreenWM(super.model);
 
+  //* Этот метод выполнится при создании страницы
   @override
   void initWidgetModel() {
     super.initWidgetModel();
@@ -68,27 +69,7 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
     loadData();
   }
 
-  // void testVoid() {
-  //   final testPoints = [
-  //     PointModel(latitude: 55.1916808, longitude: 61.3178509),
-  //     PointModel(latitude: 55.1996873, longitude: 61.3178522),
-  //     PointModel(latitude: 55.1936825, longitude: 61.3178500),
-  //   ];
-
-  //   _updateClusterMapObject(testPoints.map((e) => e.toPoint()).toList());
-
-  //   final fig = [...model.streamedFigures.value ?? <FigureModel>[]];
-  //   fig.add(
-  //     FigureModel(
-  //       name: 'xui',
-  //       lineColor: Colors.yellow,
-  //       points: testPoints,
-  //     ),
-  //   );
-
-  //   writeFiguresToMemory(fig);
-  // }
-
+  //* Показать bottomSheet с настройками
   void showSettingsBottomSheet() {
     showModalBottomSheet<void>(
       context: Keys.scaffoldKey.currentContext!,
@@ -109,23 +90,28 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
     );
   }
 
+  //* Запись фигур в файл
   Future<void> writeFiguresToMemory(List<FigureModel> figures) async {
     debugPrint('name ${figures.first.name}');
     await JsonReader.writeToMemory(figures);
   }
 
+  //* Первичная загрузка данных
   Future<void> loadData() async {
     try {
       final models = await JsonReader.readFile();
       model.streamedFigures.accept(models);
       selectFigure(0);
     } on FileSystemException catch (e) {
+      //* Если файл не найден или поврежден
       showError(context, 'Не найден json файл. Будет создан новый json файл');
     } on Exception catch (e) {
+      //* Если еще что-то
       showError(context, '$e');
     }
   }
 
+  //* Смена выбранной фигуры
   void selectFigure(int figure) {
     if (model.streamedFigures.value != null &&
         model.streamedFigures.value!.isNotEmpty) {
@@ -137,6 +123,7 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
     }
   }
 
+  //* Обновление списка фигур и перезапись файла
   void updateFiguresList(List<FigureModel> figures) {
     model.streamedFigures.accept(figures);
     writeFiguresToMemory(figures);
@@ -151,6 +138,7 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
     model.selectedColor.accept(color);
   }
 
+  //* Создание новой точки и добавление ее в конец списка
   void createPoint() {
     final selected = model.selectedFigure.value!;
     final figures = [...model.streamedFigures.value ?? <FigureModel>[]];
@@ -189,6 +177,7 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
     }
   }
 
+  //* Удаление последней добавленной точки
   void deletePoint() {
     final selected = model.selectedFigure.value!;
 

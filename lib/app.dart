@@ -5,6 +5,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 class MapDraw extends StatelessWidget {
   MapDraw({Key? key}) : super(key: key);
 
+  // ignore: member-ordering-extended
   final _appRouter = AppRouter();
 
   @override

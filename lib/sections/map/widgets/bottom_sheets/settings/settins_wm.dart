@@ -33,6 +33,7 @@ class SettingsWM extends WidgetModel<SettingsBottomSheet, SettingsModel> {
     }
   }
 
+  //* Обновление фигуры
   Future<void> updateFigure({
     int? color,
     String? name,
@@ -62,6 +63,7 @@ class SettingsWM extends WidgetModel<SettingsBottomSheet, SettingsModel> {
     model.streamedFigures.accept(finalFigures);
   }
 
+  //* Обновление фигуры и вызов коллбека
   Future<void> updateFiguresAndSave() async {
     await updateFigure(
       name: nameController.text,
@@ -79,13 +81,7 @@ class SettingsWM extends WidgetModel<SettingsBottomSheet, SettingsModel> {
     model.streamedFigures.accept(widget.figures);
   }
 
-  // void saveCallback() {
-  //   updateFigure(
-  //     name: nameController.text,
-  //     color:
-  //   );
-  // }
-
+  //* Выбор фигуры и вызов коллбека
   void selectFigure(int figure) {
     if (model.streamedFigures.value != null &&
         model.streamedFigures.value!.isNotEmpty) {
@@ -98,6 +94,7 @@ class SettingsWM extends WidgetModel<SettingsBottomSheet, SettingsModel> {
     }
   }
 
+  //* Создание новой фигуры
   void createNewFigure() {
     final figures = [...model.streamedFigures.value ?? <FigureModel>[]];
 

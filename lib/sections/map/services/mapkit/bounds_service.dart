@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-/// Сервис для вычисления границ области, в котрой находятся все заданные точки
+/// Сервис для вычисления границ области, в которой находятся все заданные точки
 class BoundsService {
   static BoundingBox getBounds(List<Point> points) {
     final lngs = points.map<double>((m) => m.longitude).toList();

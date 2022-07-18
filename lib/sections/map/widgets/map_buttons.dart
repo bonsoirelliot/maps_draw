@@ -22,6 +22,7 @@ class MapButtons extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        //* Настройки
         CircleButton(
           icon: Icons.settings_rounded,
           onPressed: onSettingsPressed,
@@ -29,6 +30,8 @@ class MapButtons extends StatelessWidget {
         const SizedBox(
           height: StaticData.defaultPadding,
         ),
+
+        //* Удалить
         CircleButton(
           icon: Icons.delete_rounded,
           onPressed: onDeletePressed,
@@ -36,6 +39,8 @@ class MapButtons extends StatelessWidget {
         const SizedBox(
           height: StaticData.defaultPadding,
         ),
+
+        //* Создать
         CircleButton(
           icon: Icons.add_rounded,
           onPressed: onPlusPressed,
@@ -43,6 +48,8 @@ class MapButtons extends StatelessWidget {
         const SizedBox(
           height: StaticData.defaultPadding,
         ),
+
+        //* Получить геолокацию
         CircleButton(
           icon: Icons.navigation_outlined,
           onPressed: onUserPositionPressed,

@@ -6,6 +6,7 @@ import 'package:map_draw/sections/support/support_screen.dart';
 
 part 'router.gr.dart';
 
+/// Роутер для навигации в приложении
 @MaterialAutoRouter(
   replaceInRouteName: 'Screen|Page,Route',
   routes: <AutoRoute>[

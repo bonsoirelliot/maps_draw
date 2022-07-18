@@ -1,8 +1,11 @@
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
+/// Модель точки; сделал кастомную, т.к. у стандартной нет метода toJson
 class PointModel {
+  /// Широта
   final double latitude;
 
+  /// Долгота
   final double longitude;
 
   PointModel({
@@ -17,6 +20,7 @@ class PointModel {
     };
   }
 
+  /// Возвращает Point
   Point toPoint() {
     return Point(
       latitude: latitude,
