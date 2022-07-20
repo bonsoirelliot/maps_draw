@@ -115,11 +115,11 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
   void selectFigure(int figure) {
     if (model.streamedFigures.value != null &&
         model.streamedFigures.value!.isNotEmpty) {
+      model.selectedFigure.accept(figure);
+
       _updateClusterMapObject(model.streamedFigures.value![figure].points
           .map((e) => e.toPoint())
           .toList());
-
-      model.selectedFigure.accept(figure);
     }
   }
 
@@ -210,11 +210,11 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
       }
 
       updateFiguresList(finalFigures);
-
-      _updateClusterMapObject(points.map((e) => e.toPoint()).toList());
     } else {
       showError(context, 'Нет точек для удаления');
     }
+
+    _updateClusterMapObject(points.map((e) => e.toPoint()).toList());
   }
 
   //* Обновление позиции пользователя и навигация к ней
@@ -267,12 +267,18 @@ class MapScreenWM extends WidgetModel<MapScreen, MapScreenModel> {
           model.streamedFigures.value?[model.selectedFigure.value!].lineColor,
     );
 
+    final objects = [
+      ...model.streamedMapObjects.value ?? <MapObject>[],
+      placemarkCollection,
+    ];
+
+    //* Линия не удалялась,если в ней одна точка
+    if (points.length > 1) {
+      objects.add(line);
+    }
+
     model.streamedMapObjects.accept(
-      [
-        ...model.streamedMapObjects.value ?? <MapObject>[],
-        placemarkCollection,
-        line,
-      ],
+      objects,
     );
   }
 
